@@ -12,23 +12,44 @@ def modo_creacion():
     Función que inicia el modo de creación de crucigramas 3D.
     Permite al usuario definir dimensiones y añadir palabras.
     """
+
     pass
+
+plantillas = "plantillas definidas 1,2,3,4,5. Cada una tiene cantidad de palabras y dimensiones,"
 
 def definir_dimensiones():
     """
-    Permite al usuario ingresar las dimensiones del crucigrama (X, Y, Z).
-    Retorna una tupla con las dimensiones (x, y, z).
+    Permite al usuario escojer las plantilla de crucigranas 3D.
+    Retorna cantidad de palabras y dimensiones x,y.
     """
+
+    print("Elija una plantilla para visualizarla ")
+    #se muestran las plantillas
+    plantilla = "pantilla seleccionada"
+
+    cantidad = 7 #ejemplo
+    x = 7 #ejemplo
+    y = 7 #ejemplo
+    dimensiones = (x,y)
+
     pass
 
-def agregar_palabra(palabra, definicion, posicion, direccion):
+def agregar_palabra(cantidad, dimensiones):
     """
     Agrega una palabra al crucigrama en una posición y dirección específicas.
+    Definir:
     - palabra: String, la palabra a agregar.
     - definicion: String, la definición de la palabra.
-    - posicion: Tupla (x, y, z), posición inicial de la palabra en el espacio 3D.
-    - direccion: Int, 0 para eje X, 1 para eje Y, 2 para eje Z.
+    - Eje: Int, para eje X-0 para eje Y=1 para eje Z=2.
     """
+    Eje_X = 7#Cantidad de palabras que van en el eje x, horizontal
+    Eje_Y = 7#Cantidad de palabras que van en el eje y, vertical
+    Eje_Z = 7#Cantidad de palabras que van en el eje z, fondo
+    palabra = input("Ingresa una palabra: ")
+    definicion = input("Ingrese la definicion: ")
+    eje = input("Ingrese el eje(X,Y,Z): ")
+        
+
     pass
 
 def validar_interseccion(palabra, posicion, direccion):
