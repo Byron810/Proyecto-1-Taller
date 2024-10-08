@@ -7,8 +7,10 @@ crucigrama_3d = {}
 z_actual = 0
 vista_actual = 'XY'  # Para controlar la vista actual: 'XY' o 'YZ'
 
-# Función para seleccionar archivo
+
 def seleccionar_archivo():
+    """Función para seleccionar archivo
+    """
     archivo = filedialog.askopenfilename(
         title="Seleccionar archivo de crucigrama",
         filetypes=[("Text Files", "*.txt")]
@@ -20,13 +22,19 @@ def seleccionar_archivo():
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo cargar el archivo: {str(e)}")
 
-# Cargar el archivo de crucigrama y convertirlo a estructura
+
 def cargar_crucigrama(ruta):
+    """ Cargar el archivo de crucigrama y convertirlo a estructura
+
+    Args:
+        ruta (_type_): _description_
+    """
     global crucigrama_3d
     with open(ruta, 'r') as file:
         contenido = file.readlines()
     
-    # Convertir el contenido a una lista 3D (por ejemplo, dividiendo por z, x, y)
+    """Convertir el contenido a una lista 3D (por ejemplo, dividiendo por z, x, y)
+    """
     crucigrama_3d = []
     capa_actual = []
     for linea in contenido:
@@ -39,8 +47,13 @@ def cargar_crucigrama(ruta):
         crucigrama_3d.append(capa_actual)  # Agregar la última capa
     crear_crucigrama(len(crucigrama_3d[0]))  # Crear la ventana con las dimensiones del crucigrama
 
-# Iniciar la creación del crucigrama
+
 def crear_crucigrama(dimensiones):
+    """Iniciar la creación del crucigrama
+
+    Args:
+        dimensiones (_type_): _description_
+    """
     global DIMENSIONES, ventana, crucigrama_3d, z_actual, vista_actual
     DIMENSIONES = dimensiones
     ventana = tk.Tk()
@@ -49,8 +62,13 @@ def crear_crucigrama(dimensiones):
     vista_actual = 'XY'  # Comenzamos con la vista inicial en X-Y
     mostrar_plano(z_actual)  # Mostrar automáticamente el plano inicial (X-Y)
 
-# Mostrar el plano actual del crucigrama en la interfaz
+
 def mostrar_plano(z):
+    """ Mostrar el plano actual del crucigrama en la interfaz
+
+    Args:
+        z (_type_): _description_
+    """
     global crucigrama_3d, DIMENSIONES, z_actual, vista_actual
     z_actual = z
 
@@ -93,8 +111,9 @@ def mostrar_plano(z):
 
     ventana.mainloop()
 
-# Cambiar al plano anterior en Z
 def plano_anterior():
+    """ Cambiar al plano anterior en Z
+    """
     global z_actual
     if z_actual > 0:
         z_actual -= 1
@@ -102,13 +121,17 @@ def plano_anterior():
 
 # Cambiar al siguiente plano en Z
 def plano_siguiente():
+    """ Cambiar al siguiente plano en Z
+    """
     global z_actual, crucigrama_3d
     if z_actual < len(crucigrama_3d) - 1:
         z_actual += 1
         mostrar_plano(z_actual)
 
-# Cambiar entre las vistas X-Y y Y-Z
+
 def cambiar_vista():
+    """Cambiar entre las vistas X-Y y Y-Z
+    """
     global vista_actual
     if vista_actual == 'XY':
         vista_actual = 'YZ'
@@ -116,8 +139,10 @@ def cambiar_vista():
         vista_actual = 'XY'
     mostrar_plano(z_actual)
 
-# Función principal para iniciar el programa
+
 def iniciar_programa():
+    """ Función principal para iniciar el programa
+    """
     root = tk.Tk()
     root.withdraw()  # Ocultar ventana principal de Tkinter
     
