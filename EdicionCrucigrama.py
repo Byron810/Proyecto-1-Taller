@@ -38,10 +38,10 @@ def mostrar_plano(z):
             entrada.bind("<KeyRelease>", actualizar_celda)
 
     # Botones para navegar entre planos
-    boton_arriba = tk.Button(ventana, text="Plano Z+", command=lambda: cambiar_plano(1))
+    boton_arriba = tk.Button(ventana, text="Plano X-Y", command=lambda: cambiar_plano(1))
     boton_arriba.grid(row=DIMENSIONES, column=0)
 
-    boton_abajo = tk.Button(ventana, text="Plano Z-", command=lambda: cambiar_plano(-1))
+    boton_abajo = tk.Button(ventana, text="Plano Y-Z", command=lambda: cambiar_plano(-1))
     boton_abajo.grid(row=DIMENSIONES, column=1)
 
     label_plano = tk.Label(ventana, text=f"Plano Z = {z}")

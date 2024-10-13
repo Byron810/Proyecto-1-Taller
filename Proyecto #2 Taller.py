@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+import random
 
 # Función para limpiar consola (sólo para uso fuera de Tkinter)
 def limpiar_consola():
