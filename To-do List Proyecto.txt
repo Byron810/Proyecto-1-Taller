@@ -1,0 +1,19 @@
+To-do List Proyecto
+-Menu Principal(listo)
+
+-Modo creacion:
+-falta todo
+
+-Modo edicicion:
+-Validaciones entre palabras
+
+GuardarArchivoBinarios:
+-Agregarle la parte de creacion
+
+Modo Resolucion:
+-Hacer que lea los archivos bien
+-Una vez que los lea bien, agregar las definiciones de las palabras a un costado con un numero cada una
+-Poner los numeros en el crucigrama vacio o sea sin letras para que el usuario lo resuelva
+-Determiar el momento en el que se gana
+
+PASARLO TODO A APLICACION

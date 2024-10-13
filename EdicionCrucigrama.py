@@ -1,4 +1,5 @@
 import tkinter as tk
+import GuardarArchivoBinario as GAB
 
 # Tamaño del crucigrama (6x6x6 por defecto)
 DIMENSIONES = 6
@@ -44,8 +45,9 @@ def mostrar_plano(z):
     boton_abajo = tk.Button(ventana, text="Plano Y-Z", command=lambda: cambiar_plano(-1))
     boton_abajo.grid(row=DIMENSIONES, column=1)
 
-    label_plano = tk.Label(ventana, text=f"Plano Z = {z}")
-    label_plano.grid(row=DIMENSIONES, column=2, columnspan=2)
+    # Botón para guardar el crucigrama
+    boton_guardar = tk.Button(ventana, text="Guardar Crucigrama", command=guardar_crucigrama)
+    boton_guardar.grid(row=DIMENSIONES, column=2)
 
 # Función para cambiar el plano en el eje Z
 def cambiar_plano(direccion):
@@ -54,9 +56,25 @@ def cambiar_plano(direccion):
     z_actual = max(0, min(DIMENSIONES - 1, z_actual))  # Mantener z en el rango permitido
     mostrar_plano(z_actual)
 
+# Función para obtener las palabras del crucigrama
+def obtener_palabras():
+    # Aquí se debe adaptar la recolección de palabras, definiciones y sus posiciones.
+    # Ejemplo de lista de palabras:
+    palabras = [
+        ("PYTHON", "Lenguaje de programación", 0, 1, 0, 0),  # (palabra, definición, x, y, z, dirección)
+        ("CODE", "Escribir programas", 4, 0, 0, 1)
+    ]
+    return palabras
+
+# Función para guardar el crucigrama usando el módulo GAB
+def guardar_crucigrama():
+    dimensiones = (DIMENSIONES, DIMENSIONES, DIMENSIONES)
+    palabras = obtener_palabras()
+    ruta_archivo = "crucigrama.c3d"  # Se puede permitir al usuario elegir la ruta si es necesario
+    GAB.guardar_crucigrama(ruta_archivo, dimensiones, crucigrama_3d, palabras)
+
 # Mostrar el primer plano (Z=0)
 mostrar_plano(z_actual)
 
 # Ejecutar la ventana
 ventana.mainloop()
-
