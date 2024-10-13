@@ -5,7 +5,7 @@ import FuncionResolucion
 # Variables globales
 ventana = None
 frame_menu = None
-frame_crucigrama = None  # Añadir variable para el marco del crucigrama
+frame_crucigrama = None  # Variable para el marco del crucigrama
 
 # Modo resolución de crucigramas
 def resolucion():
@@ -15,13 +15,12 @@ def resolucion():
 
 # Modo creación de crucigramas
 def modo_creacion():
-    global frame_crucigrama  # Usar la variable global
+    global frame_menu, frame_crucigrama
     frame_menu.pack_forget()  # Ocultar el menú
-    if frame_crucigrama is not None:  # Si ya existe, eliminarlo
-        frame_crucigrama.destroy()  # Destruir el marco anterior
-    frame_crucigrama = tk.Frame(ventana)  # Crear un nuevo marco para el crucigrama
-    frame_crucigrama.pack()  # Empaquetar el marco en la ventana
-    creacion.iniciar_crucigrama(frame_crucigrama)  # Iniciar el crucigrama en el marco
+    
+    # Crear un nuevo marco para el crucigrama y mostrarlo
+    frame_crucigrama = creacion.App(ventana, volver_al_menu)
+    frame_crucigrama.pack()
 
 # Función para mostrar el menú principal usando Tkinter
 def menu_principal():
@@ -51,6 +50,11 @@ def menu_principal():
 
     # Ejecutar el bucle principal de Tkinter
     ventana.mainloop()
+
+def volver_al_menu():
+    global frame_crucigrama, frame_menu
+    frame_crucigrama.pack_forget()  # Ocultar el marco del crucigrama
+    frame_menu.pack()  # Volver a mostrar el menú
 
 # Ejecutar ventana
 if __name__ == "__main__":
