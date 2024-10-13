@@ -1,5 +1,5 @@
 import tkinter as tk
-import creacionAuto as creacion
+#import creacionAuto as creacion
 import FuncionResolucion
 
 # Variables globales
@@ -11,7 +11,8 @@ def resolucion():
 
 # Modo creación de crucigramas
 def modo_creacion():
-    creacion.iniciar_programa(ventana)
+    #creacion.iniciar_programSa(ventana)
+    pass
 
 # Función para mostrar el menú principal usando Tkinter
 def menu_principal():
