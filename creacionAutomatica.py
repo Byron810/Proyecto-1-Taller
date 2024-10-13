@@ -75,9 +75,16 @@ class Crucigrama:
         self.contador += 1  # Incrementar el contador
 
     def mostrar_descripciones(self):
-        self.cuadro_descripcion.delete(1.0, tk.END)  # Limpiar el cuadro
+        # Limpiar el cuadro
+        current_content = self.cuadro_descripcion.get(1.0, tk.END).strip()  # Obtener contenido actual
+        if current_content:
+            current_content += "\n"  # Agregar nueva línea si ya hay contenido
+        # Agregar cada descripción numerada al cuadro sin borrar el contenido anterior
         for numero, descripcion in self.descripciones.items():
-            self.cuadro_descripcion.insert(tk.END, f"{numero}. {descripcion}\n")  # Mostrar la descripción con número
+            current_content += f"{numero}. {descripcion}\n"  # Mostrar la descripción con número
+
+        self.cuadro_descripcion.delete(1.0, tk.END)  # Limpiar el cuadro
+        self.cuadro_descripcion.insert(tk.END, current_content)  # Insertar el nuevo contenido
 
     def agregar_palabra(self):
         palabra = self.entrada_palabra.get()
