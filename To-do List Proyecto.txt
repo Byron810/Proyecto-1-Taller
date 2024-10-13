@@ -1,8 +1,7 @@
 To-do List Proyecto
 -Menu Principal(listo)
 
--Modo creacion:
--falta todo
+-Modo creacion(listo)
 
 -Modo edicicion:
 -Validaciones entre palabras

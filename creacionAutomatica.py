@@ -156,9 +156,10 @@ class Crucigrama:
                 archivo.write(struct.pack('B', direccion_num))  # 1 byte
 
 class App:
-    def __init__(self):
-        self.ventana_principal = tk.Tk()
-        self.ventana_principal.title("Crucigramas 3D")
+    def __init__(self, master, volver_al_menu):
+        self.ventana_principal = tk.Frame(master)  # Usar un Frame en lugar de una ventana
+        self.ventana_principal.pack()
+        self.volver_al_menu = volver_al_menu  # Guardar referencia a la función de volver al menú
 
         # Crear un Frame para la línea separadora
         self.frame_linea = tk.Frame(self.ventana_principal, width=2, bg="black")
@@ -168,7 +169,17 @@ class App:
         self.crucigrama_xy = Crucigrama("xy", 6, 6, self.ventana_principal, columna_offset=0)
         self.crucigrama_xz = Crucigrama("xz", 6, 6, self.ventana_principal, columna_offset=2)
 
-        self.ventana_principal.mainloop()
+        # Botón para volver al menú
+        boton_volver = tk.Button(self.ventana_principal, text="Volver al Menú", command=self.volver_al_menu)
+        boton_volver.grid(row=2, column=0, columnspan=3)  # Coloca el botón en una nueva fila
 
-if __name__ == "__main__":
-    App()
+        # Añade un método para guardar el crucigrama que también llame a volver_al_menu()
+        self.boton_guardar = tk.Button(self.ventana_principal, text="Guardar Crucigrama", command=self.guardar_crucigrama)
+        self.boton_guardar.grid(row=2, column=0, columnspan=3)  # Coloca el botón en una nueva fila
+
+    def guardar_crucigrama(self):
+        # Implementa la lógica de guardar tu crucigrama
+        # Luego vuelve al menú
+        self.volver_al_menu()
+
+    

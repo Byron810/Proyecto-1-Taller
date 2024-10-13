@@ -1,8 +1,0 @@
-arriba,b,x
-arbol,f,x
-zapato,k,y
-orca,s,y
-caca,d,x
-coco,f,y
-si,j,y
-sol,l,y
