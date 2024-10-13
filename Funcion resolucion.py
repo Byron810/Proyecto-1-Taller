@@ -9,11 +9,10 @@ vista_actual = 'XY'  # Para controlar la vista actual: 'XY' o 'YZ'
 
 
 def seleccionar_archivo():
-    """Función para seleccionar archivo
-    """
+    """Función para seleccionar archivo"""
     archivo = filedialog.askopenfilename(
         title="Seleccionar archivo de crucigrama",
-        filetypes=[("Text Files", "*.txt")]
+        filetypes=[("Text Files", "*.C3D")]
     )
     
     if archivo:
@@ -24,17 +23,12 @@ def seleccionar_archivo():
 
 
 def cargar_crucigrama(ruta):
-    """ Cargar el archivo de crucigrama y convertirlo a estructura
-
-    Args:
-        ruta (_type_): _description_
-    """
+    """ Cargar el archivo de crucigrama y convertirlo a estructura"""
     global crucigrama_3d
     with open(ruta, 'r') as file:
         contenido = file.readlines()
     
-    """Convertir el contenido a una lista 3D (por ejemplo, dividiendo por z, x, y)
-    """
+    """Convertir el contenido a una lista 3D"""
     crucigrama_3d = []
     capa_actual = []
     for linea in contenido:
@@ -49,11 +43,7 @@ def cargar_crucigrama(ruta):
 
 
 def crear_crucigrama(dimensiones):
-    """Iniciar la creación del crucigrama
-
-    Args:
-        dimensiones (_type_): _description_
-    """
+    """Iniciar la creación del crucigrama"""
     global DIMENSIONES, ventana, crucigrama_3d, z_actual, vista_actual
     DIMENSIONES = dimensiones
     ventana = tk.Tk()
@@ -64,11 +54,7 @@ def crear_crucigrama(dimensiones):
 
 
 def mostrar_plano(z):
-    """ Mostrar el plano actual del crucigrama en la interfaz
-
-    Args:
-        z (_type_): _description_
-    """
+    """ Mostrar el plano actual del crucigrama en la interfaz"""
     global crucigrama_3d, DIMENSIONES, z_actual, vista_actual
     z_actual = z
 
@@ -109,11 +95,43 @@ def mostrar_plano(z):
     btn_rotar = tk.Button(ventana, text="Cambiar Vista", command=cambiar_vista)
     btn_rotar.grid(row=DIMENSIONES + 1, column=2)
 
+    # Botón para agregar palabras
+    btn_agregar_palabra = tk.Button(ventana, text="Agregar Palabra", command=agregar_palabra)
+    btn_agregar_palabra.grid(row=DIMENSIONES + 1, column=3)
+
     ventana.mainloop()
 
+
+def agregar_palabra():
+    """Abrir una nueva ventana para agregar palabras al crucigrama"""
+    global crucigrama_3d, z_actual
+    ventana_palabra = tk.Toplevel()
+    ventana_palabra.title("Agregar Palabra")
+
+    label = tk.Label(ventana_palabra, text=f"Agregar palabra al plano Z = {z_actual} (Vista X-Y)", font=("Arial", 12))
+    label.grid(row=0, column=0, columnspan=2)
+
+    for i in range(DIMENSIONES):
+        for j in range(DIMENSIONES):
+            letra = crucigrama_3d[z_actual][i][j]
+            caja_texto = tk.Entry(ventana_palabra, width=4)
+            caja_texto.insert(0, letra)  # Mostrar la letra existente en la caja
+            caja_texto.grid(row=i + 1, column=j)
+
+    def guardar_cambios():
+        """Guardar las palabras ingresadas en el crucigrama"""
+        for i in range(DIMENSIONES):
+            for j in range(DIMENSIONES):
+                nueva_letra = ventana_palabra.grid_slaves(row=i + 1, column=j)[0].get()
+                crucigrama_3d[z_actual][i][j] = nueva_letra if nueva_letra != "" else " "
+        ventana_palabra.destroy()
+        mostrar_plano(z_actual)
+
+    btn_guardar = tk.Button(ventana_palabra, text="Guardar", command=guardar_cambios)
+    btn_guardar.grid(row=DIMENSIONES + 1, column=0, columnspan=DIMENSIONES)
+
 def plano_anterior():
-    """ Cambiar al plano anterior en Z
-    """
+    """ Cambiar al plano anterior en Z"""
     global z_actual
     if z_actual > 0:
         z_actual -= 1
@@ -121,8 +139,7 @@ def plano_anterior():
 
 # Cambiar al siguiente plano en Z
 def plano_siguiente():
-    """ Cambiar al siguiente plano en Z
-    """
+    """ Cambiar al siguiente plano en Z"""
     global z_actual, crucigrama_3d
     if z_actual < len(crucigrama_3d) - 1:
         z_actual += 1
@@ -130,8 +147,7 @@ def plano_siguiente():
 
 
 def cambiar_vista():
-    """Cambiar entre las vistas X-Y y Y-Z
-    """
+    """Cambiar entre las vistas X-Y y Y-Z"""
     global vista_actual
     if vista_actual == 'XY':
         vista_actual = 'YZ'
@@ -141,8 +157,7 @@ def cambiar_vista():
 
 
 def iniciar_programa():
-    """ Función principal para iniciar el programa
-    """
+    """ Función principal para iniciar el programa"""
     root = tk.Tk()
     root.withdraw()  # Ocultar ventana principal de Tkinter
     
@@ -150,4 +165,3 @@ def iniciar_programa():
         seleccionar_archivo()
 
 iniciar_programa()
-
