@@ -1,142 +1,135 @@
-import os
 import tkinter as tk
+from tkinter import messagebox
 import random
 
-# Modo creación de crucigramas
-def modo_creacion():
-    """
-    Función que inicia el modo de creación de crucigramas 3D.
-    Permite al usuario definir dimensiones y añadir palabras.
-    """
-    pass
+class Crucigrama:
+    def _init_(self, nombre, filas, columnas, master, columna_offset):
+        self.nombre = nombre
+        self.filas = filas
+        self.columnas = columnas
+        self.cuadrícula = [["" for _ in range(columnas)] for _ in range(filas)]
+        self.descripciones = {}  # Diccionario para almacenar las descripciones de las palabras
+        self.contador = 1  # Contador para numerar las descripciones
+        
+        self.ventana = tk.Frame(master)  # Usar Frame para manejar la ventana del crucigrama
+        self.crear_cuadricula()
 
-def definir_dimensiones():
-    """
-    Permite al usuario ingresar las dimensiones del crucigrama (X, Y, Z).
-    Retorna una tupla con las dimensiones (x, y, z).
-    """
-    pass
+        # Campo de entrada para la palabra
+        self.entrada_palabra = tk.Entry(self.ventana)
+        self.entrada_palabra.grid(row=filas, column=0, columnspan=columnas)
 
-def agregar_palabra(palabra, definicion, posicion, direccion):
-    """
-    Agrega una palabra al crucigrama en una posición y dirección específicas.
-    - palabra: String, la palabra a agregar.
-    - definicion: String, la definición de la palabra.
-    - posicion: Tupla (x, y, z), posición inicial de la palabra en el espacio 3D.
-    - direccion: Int, 0 para eje X, 1 para eje Y, 2 para eje Z.
-    """
-    pass
+        # Campo de entrada para la descripción
+        self.entrada_descripcion = tk.Entry(self.ventana)
+        self.entrada_descripcion.grid(row=filas + 1, column=0, columnspan=columnas)
 
-def validar_interseccion(palabra, posicion, direccion):
-    """
-    Verifica si la palabra puede ser agregada en la posición y dirección dadas sin solapamientos.
-    - Retorna True si es válida, False en caso contrario.
-    """
-    pass
+        # Botón para agregar la palabra y la descripción
+        boton_agregar = tk.Button(self.ventana, text="Agregar Palabra", command=self.agregar_palabra)
+        boton_agregar.grid(row=filas + 2, column=0, columnspan=columnas)
 
-def guardar_crucigrama(nombre_archivo):
-    """
-    Guarda el crucigrama actual en un archivo binario con el nombre proporcionado.
-    - nombre_archivo: String, nombre del archivo para guardar.
-    """
-    pass
+        # Cuadro para mostrar las descripciones
+        self.cuadro_descripcion = tk.Text(self.ventana, width=30, height=10, bg="lightgrey")
+        self.cuadro_descripcion.grid(row=filas + 3, column=0, columnspan=columnas)
 
-def mostrar_vista(plano):
-    """
-    Muestra la vista del crucigrama en el plano seleccionado (X-Y o Y-Z).
-    - plano: String, "XY" para ver el plano X-Y o "YZ" para el plano Y-Z.
-    """
-    pass
+        # Colocar el Frame en la ventana principal
+        self.ventana.grid(row=0, column=columna_offset)
 
-# Modo resolución de crucigramas
-def modo_resolucion():
-    """
-    Inicia el modo de resolución de un crucigrama guardado.
-    Permite cargar un crucigrama y resolverlo.
-    """
-    pass
+    def crear_cuadricula(self):
+        for i in range(self.filas):
+            for j in range(self.columnas):
+                # Crear un botón en la posición (i, j)
+                boton = tk.Button(self.ventana, text="", width=5, height=2, bg="white")
+                boton.grid(row=i, column=j)
+                # Guardar el botón en la cuadrícula
+                self.cuadrícula[i][j] = boton
 
-def cargar_crucigrama(nombre_archivo):
-    """
-    Carga un crucigrama guardado desde un archivo binario.
-    - nombre_archivo: String, nombre del archivo a cargar.
-    """
-    pass
+    def puede_colocarse(self, palabra, fila, columna, direccion):
+        if direccion == "horizontal":
+            if columna + len(palabra) > self.columnas:  # Comprobar que no se salga
+                return False
+            for k in range(len(palabra)):
+                # Validar que si hay letra existente, debe coincidir
+                if self.cuadrícula[fila][columna + k]['text'] not in ["", palabra[k]]:
+                    return False
+            return True  # Se puede colocar horizontalmente
+            
+        elif direccion == "vertical":
+            if fila + len(palabra) > self.filas:  # Comprobar que no se salga
+                return False
+            for k in range(len(palabra)):
+                if self.cuadrícula[fila + k][columna]['text'] not in ["", palabra[k]]:
+                    return False
+            return True  # Se puede colocar verticalmente
+        
+        return False
 
-def mostrar_pista(numero_pista):
-    """
-    Muestra la pista o definición correspondiente al número de pista dado.
-    - numero_pista: Int, el número de la pista a mostrar.
-    """
-    pass
+    def generar_color(self):
+        # Genera un color aleatorio
+        return f'#{random.randint(0, 0xFFFFFF):06x}'
 
-def ingresar_respuesta(palabra, posicion, direccion):
-    """
-    Permite al usuario ingresar una respuesta en una posición y dirección específicas.
-    - palabra: String, la palabra que el usuario cree que es correcta.
-    - posicion: Tupla (x, y, z), posición inicial donde colocar la palabra.
-    - direccion: Int, 0 para eje X, 1 para eje Y, 2 para eje Z.
-    """
-    pass
+    def colocar_palabra(self, palabra, fila, columna, direccion):
+        color = self.generar_color()  # Generar un color aleatorio
+        if direccion == "horizontal":
+            self.cuadrícula[fila][columna]['text'] = str(self.contador)  # Número de la palabra
+            self.cuadrícula[fila][columna]['fg'] = color  # Color del número
+            self.cuadrícula[fila][columna]['bg'] = color  # Color de fondo de la casilla inicial
+            for k in range(1, len(palabra)):
+                self.cuadrícula[fila][columna + k]['text'] = palabra[k]  # Resto de la palabra
+        elif direccion == "vertical":
+            self.cuadrícula[fila][columna]['text'] = str(self.contador)  # Número de la palabra
+            self.cuadrícula[fila][columna]['fg'] = color  # Color del número
+            self.cuadrícula[fila][columna]['bg'] = color  # Color de fondo de la casilla inicial
+            for k in range(1, len(palabra)):
+                self.cuadrícula[fila + k][columna]['text'] = palabra[k]  # Resto de la palabra
 
-def verificar_respuesta(palabra, posicion):
-    """
-    Verifica si la palabra ingresada por el usuario es correcta según la pista y ubicación.
-    - Retorna True si es correcta, False si es incorrecta.
-    """
-    pass
+        self.descripciones[self.contador] = self.entrada_descripcion.get()  # Guardar la descripción con un número
+        self.mostrar_descripciones(self.contador)  # Actualizar el cuadro de descripciones
+        self.contador += 1  # Incrementar el contador
 
-def rotar_vista(angulo):
-    """
-    Permite rotar la vista del crucigrama según el ángulo proporcionado.
-    - angulo: Int, ángulo de rotación en grados.
-    """
-    pass
+    def mostrar_descripciones(self, contador_actual):
+        # Obtener la descripción actual
+        descripcion_actual = self.descripciones[contador_actual]
+        # Agregar la nueva descripción al final del cuadro
+        self.cuadro_descripcion.insert(tk.END, f"{contador_actual}. {descripcion_actual}\n")  # Insertar la nueva descripción
 
-# Funciones de almacenamiento
-def generar_archivo_binario(crucigrama):
-    """
-    Convierte el crucigrama a formato binario y lo guarda en un archivo.
-    - crucigrama: Diccionario o estructura que contiene el crucigrama.
-    """
-    pass
+    def agregar_palabra(self):
+        palabra = self.entrada_palabra.get()
+        descripcion = self.entrada_descripcion.get()
+        self.entrada_palabra.delete(0, tk.END)  # Limpiar la entrada de la palabra
+        self.entrada_descripcion.delete(0, tk.END)  # Limpiar la entrada de la descripción
 
-def leer_archivo_binario(nombre_archivo):
-    """
-    Lee un archivo binario y reconstruye el crucigrama para resolver.
-    - nombre_archivo: String, nombre del archivo a leer.
-    """
-    pass
+        # Intentar acomodar la palabra
+        for i in range(self.filas):
+            for j in range(self.columnas):
+                # Probar colocación horizontal
+                if len(palabra) <= self.columnas and self.puede_colocarse(palabra, i, j, "horizontal"):
+                    self.colocar_palabra(palabra, i, j, "horizontal")
+                    return
 
-def salir():
-    ventana.quit()
+                # Probar colocación vertical
+                if len(palabra) <= self.filas and self.puede_colocarse(palabra, i, j, "vertical"):
+                    self.colocar_palabra(palabra, i, j, "vertical")
+                    return
 
-# Función para mostrar el menú principal usando Tkinter
-def menu_principal():
-    ventana = tk.Tk()
-    ventana.title("Menú Principal - Crucigramas 3D")
-    ventana.geometry("300x200")  # Tamaño de la ventana
+        messagebox.showinfo("Error", "No se pudo acomodar la palabra en la cuadrícula.")
 
-    # Crear título
-    label_titulo = tk.Label(ventana, text="---Crucigramas---", font=("Arial", 16))
-    label_titulo.pack(pady=10)
+class App:
+    def _init_(self):
+        self.ventana_principal = tk.Tk()
+        self.ventana_principal.title("Crucigramas 3D")
 
-    # Crear botones del menú principal
-    boton_creacion = tk.Button(ventana, text="Modo Creación", width=20, command=modo_creacion)
-    boton_creacion.pack(pady=5)
+        # Crear un Frame para la línea separadora
+        self.frame_linea = tk.Frame(self.ventana_principal, width=2, bg="black")
+        self.frame_linea.grid(row=0, column=1, sticky="ns")  # Colocar en columna 1 y estirarlo verticalmente
 
-    boton_resolucion = tk.Button(ventana, text="Modo Resolución", width=20, command=leer_crucigrama_guardado)
-    boton_resolucion.pack(pady=5)
+        # Crear dos crucigramas, uno en cada columna
+        self.crucigrama_xy = Crucigrama("xy", 6, 6, self.ventana_principal, columna_offset=0)
+        self.crucigrama_yz = Crucigrama("yz", 6, 6, self.ventana_principal, columna_offset=2)  # Cambiado a columna 2
 
-    boton_salir = tk.Button(ventana, text="Salir", width=20, command=salir)
-    boton_salir.pack(pady=5)
+        # Ajustar el tamaño de la ventana
+        self.ventana_principal.geometry("800x400")
 
-    # Ejecutar el bucle principal de Tkinter
-    ventana.mainloop()
+        # Iniciar el bucle principal
+        self.ventana_principal.mainloop()
 
-# Ejecutar ventana 
-if __name__ == "__main__":
-    menu_principal()
-    # Iniciar el bucle de eventos de Tkinter si se crea la ventana
-    tk.mainloop()
-
+# Crear la aplicación
+App()

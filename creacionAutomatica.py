@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog
-import random
 import struct
+import MenuPrincipal
 
 class Crucigrama:
     def __init__(self, nombre, filas, columnas, master, columna_offset):
@@ -9,8 +9,7 @@ class Crucigrama:
         self.filas = filas
         self.columnas = columnas
         self.cuadrícula = [["" for _ in range(columnas)] for _ in range(filas)]
-        self.descripciones = {}  # Diccionario para almacenar las descripciones de las palabras
-        self.contador = 1  # Contador para numerar las descripciones
+        self.descripciones = []  # Lista para almacenar las descripciones de las palabras
         self.palabras_info = []  # Lista para almacenar información de las palabras
         
         self.ventana = tk.Frame(master)  # Usar Frame para manejar la ventana del crucigrama
@@ -20,21 +19,21 @@ class Crucigrama:
         self.entrada_palabra = tk.Entry(self.ventana)
         self.entrada_palabra.grid(row=filas, column=0, columnspan=columnas)
 
-        # Campo de entrada para la descripción
-        self.entrada_descripcion = tk.Entry(self.ventana)
-        self.entrada_descripcion.grid(row=filas + 1, column=0, columnspan=columnas)
-
-        # Botón para agregar la palabra y la descripción
+        # Botón para agregar la palabra
         boton_agregar = tk.Button(self.ventana, text="Agregar Palabra", command=self.agregar_palabra)
-        boton_agregar.grid(row=filas + 2, column=0, columnspan=columnas)
+        boton_agregar.grid(row=filas + 1, column=0, columnspan=columnas)
 
         # Botón para guardar el crucigrama
         boton_guardar = tk.Button(self.ventana, text="Guardar Crucigrama", command=self.guardar_crucigrama)
-        boton_guardar.grid(row=filas + 3, column=0, columnspan=columnas)
+        boton_guardar.grid(row=filas + 2, column=0, columnspan=columnas)
 
-        # Cuadro para mostrar las descripciones
-        self.cuadro_descripcion = tk.Text(self.ventana, width=30, height=10, bg="lightgrey")
-        self.cuadro_descripcion.grid(row=filas + 4, column=0, columnspan=columnas)
+        # Cuadro de texto para escribir descripciones
+        self.texto_entry = tk.Text(self.ventana, width=40, height=10)
+        self.texto_entry.grid(row=filas + 3, column=0, columnspan=columnas, pady=10)
+
+        # Botón para extraer texto y guardarlo en la lista
+        boton_extraer = tk.Button(self.ventana, text="Extraer Texto", command=self.extraer_texto)
+        boton_extraer.grid(row=filas + 4, column=0, columnspan=columnas, pady=5)
 
         # Colocar el Frame en la ventana principal
         self.ventana.grid(row=0, column=columna_offset)
@@ -70,36 +69,27 @@ class Crucigrama:
 
     def colocar_palabra(self, palabra, fila, columna, direccion):
         if direccion == "horizontal":
-            # Colocar el resto de la palabra
             for k in range(len(palabra)):
                 self.cuadrícula[fila][columna + k]['text'] = palabra[k]  # Colocar la letra de la palabra
             tipo = "Horizontal"
         elif direccion == "vertical":        
-            # Colocar el resto de la palabra
             for k in range(len(palabra)):
                 self.cuadrícula[fila + k][columna]['text'] = palabra[k]  # Colocar la letra de la palabra
             tipo = "Vertical"
 
-        # Guardar la descripción con un número y el tipo
-        self.descripciones[self.contador] = (self.entrada_descripcion.get(), tipo)  
-        self.palabras_info.append((palabra, self.entrada_descripcion.get(), fila, columna, direccion))  # Agregar información de la palabra
-        self.mostrar_descripciones(self.contador)  # Actualizar el cuadro de descripciones
-        self.contador += 1  # Incrementar el contador
+        # Guardar la descripción (de momento no se usa para agregar la palabra)
+        self.descripciones.append(f"Descripción de {palabra}")  # Agregar la descripción a la lista
+        self.palabras_info.append((palabra, fila, columna, direccion))  # Agregar información de la palabra
 
-    def mostrar_descripciones(self, contador_actual):
-        # Obtener la descripción actual y el tipo
-        descripcion_actual, tipo = self.descripciones[contador_actual]
-        # Agregar la nueva descripción al final del cuadro
-        if tipo == "Horizontal":
-            self.cuadro_descripcion.insert(tk.END, f"H{contador_actual}. {descripcion_actual}\n")  # Insertar la nueva descripción con H
-        else:
-            self.cuadro_descripcion.insert(tk.END, f"V{contador_actual}. {descripcion_actual}\n")  # Insertar la nueva descripción con V
+    def extraer_texto(self):
+        texto = self.texto_entry.get("1.0", tk.END).strip()  # Extraer texto del cuadro de texto
+        self.descripciones.append(texto)  # Guardar en la lista
+        self.texto_entry.delete("1.0", tk.END)  # Limpiar el cuadro de texto
+        messagebox.showinfo("Éxito", "Texto extraído y almacenado correctamente.")
 
     def agregar_palabra(self):
         palabra = self.entrada_palabra.get()
-        descripcion = self.entrada_descripcion.get()
         self.entrada_palabra.delete(0, tk.END)  # Limpiar la entrada de la palabra
-        self.entrada_descripcion.delete(0, tk.END)  # Limpiar la entrada de la descripción
 
         # Intentar acomodar la palabra
         for i in range(self.filas):
@@ -118,42 +108,35 @@ class Crucigrama:
 
     def guardar_crucigrama(self):
         # Abrir diálogo para guardar archivo
-        archivo_guardar = filedialog.asksaveasfilename(defaultextension=".c3d", filetypes=[("Crucigramas 3D", "*.c3d")])
+        archivo_guardar = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de Texto", "*.c3d")])
         if not archivo_guardar:
             return  # Si el usuario cancela, no hacer nada
 
-        # Guardar en formato binario
-        with open(archivo_guardar, "wb") as archivo:
-           
-
+        # Guardar en formato de texto
+        with open(archivo_guardar, "w", encoding='utf-8') as archivo:
             # Escribir la versión del formato
             version = 1
-            archivo.write(struct.pack('B', version))  # 1 byte
+            archivo.write(f"Versión: {version}\n")  # Escribir la versión
 
             # Escribir dimensiones
-            archivo.write(struct.pack('iii', self.columnas, self.filas, 1))  # Dimensiones X, Y, Z
+            archivo.write(f"Dimensiones: {self.columnas} x {self.filas}\n")  # Dimensiones X, Y, Z
 
             # Escribir número de palabras
             num_palabras = len(self.palabras_info)
-            archivo.write(struct.pack('i', num_palabras))  # Número total de palabras
+            archivo.write(f"Número de palabras: {num_palabras}\n")  # Número total de palabras
 
-            for palabra, definicion, fila, columna, direccion in self.palabras_info:
+            # Escribir cada palabra y su información
+            for index, (palabra, fila, columna, direccion) in enumerate(self.palabras_info):
                 # Longitud de la palabra
                 longitud_palabra = len(palabra)
-                archivo.write(struct.pack('B', longitud_palabra))  # 1 byte
-                archivo.write(palabra.encode('utf-8'))  # Palabra en bytes
+                descripcion = self.descripciones[index] if index < len(self.descripciones) else ""
+                archivo.write(f"Palabra: {palabra} (Longitud: {longitud_palabra})\n")
+                archivo.write(f"Descripción: {descripcion}\n")
+                archivo.write(f"Posición: ({columna}, {fila})\n")
+                archivo.write(f"Dirección: {'Horizontal' if direccion == 'horizontal' else 'Vertical'}\n\n")
 
-                # Longitud de la definición
-                longitud_definicion = len(definicion)
-                archivo.write(struct.pack('H', longitud_definicion))  # 2 bytes
-                archivo.write(definicion.encode('utf-8'))  # Definición en bytes
-
-                # Posición inicial (X, Y, Z)
-                archivo.write(struct.pack('iii', columna, fila, 0))  # Posición inicial (X, Y, Z)
-
-                # Dirección de la palabra
-                direccion_num = 0 if direccion == "horizontal" else 1
-                archivo.write(struct.pack('B', direccion_num))  # 1 byte
+        messagebox.showinfo("Éxito", "El crucigrama y las descripciones se han guardado correctamente.")
+    
 
 class App:
     def __init__(self, master, volver_al_menu):
@@ -170,16 +153,15 @@ class App:
         self.crucigrama_xz = Crucigrama("xz", 6, 6, self.ventana_principal, columna_offset=2)
 
         # Botón para volver al menú
-        boton_volver = tk.Button(self.ventana_principal, text="Volver al Menú", command=self.volver_al_menu)
+        boton_volver = tk.Button(self.ventana_principal, text="Volver al Menú", command=MenuPrincipal.menu_principal)
         boton_volver.grid(row=2, column=0, columnspan=3)  # Coloca el botón en una nueva fila
 
-        # Añade un método para guardar el crucigrama que también llame a volver_al_menu()
-        self.boton_guardar = tk.Button(self.ventana_principal, text="Guardar Crucigrama", command=self.guardar_crucigrama)
-        self.boton_guardar.grid(row=2, column=0, columnspan=3)  # Coloca el botón en una nueva fila
+# Inicializar la aplicación
+def main():
+    root = tk.Tk()
+    root.title("Aplicación de Crucigramas")
+    app = App(root, MenuPrincipal)  # Aquí pasas la función para volver al menú
+    root.mainloop()
 
-    def guardar_crucigrama(self):
-        # Implementa la lógica de guardar tu crucigrama
-        # Luego vuelve al menú
-        self.volver_al_menu()
-
-    
+if __name__ == "__main__":
+    main()
