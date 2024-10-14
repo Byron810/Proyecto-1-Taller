@@ -7,14 +7,23 @@ ventana = None
 frame_menu = None   
 frame_crucigrama = None  # Variable para el marco del crucigrama
 
-# Modo resolución de crucigramas
 def resolucion():
+    """
+    Inicia el modo de resolución de crucigramas.
+
+    Oculta el menú principal y llama a la función que inicia la resolución de crucigramas.
+    """
     global frame_menu
     frame_menu.pack_forget()  # Ocultar el menú
     FuncionResolver.iniciar_programa()
 
-# Modo creación de crucigramas
 def modo_creacion():
+    """
+    Inicia el modo de creación de crucigramas.
+
+    Oculta el menú principal y muestra el marco de creación de crucigramas usando 
+    la clase `App` de `creacionAutomatica`.
+    """
     global frame_menu, frame_crucigrama
     frame_menu.pack_forget()  # Ocultar el menú
     
@@ -22,8 +31,13 @@ def modo_creacion():
     frame_crucigrama = creacion.App(ventana, volver_al_menu)
     frame_crucigrama.pack()
 
-# Función para mostrar el menú principal usando Tkinter
 def menu_principal():
+    """
+    Muestra el menú principal de la aplicación con opciones para creación y resolución de crucigramas.
+
+    Crea una ventana con Tkinter y muestra botones para acceder al modo de creación o resolución,
+    además de un botón para salir del programa.
+    """
     global ventana
     ventana = tk.Tk()
     ventana.title("Menú Principal - Crucigramas 3D")
@@ -52,6 +66,11 @@ def menu_principal():
     ventana.mainloop()
 
 def volver_al_menu():
+    """
+    Vuelve al menú principal desde el marco de creación o resolución de crucigramas.
+
+    Oculta el marco del crucigrama y vuelve a mostrar el menú principal.
+    """
     global frame_crucigrama, frame_menu
     frame_crucigrama.pack_forget()  # Ocultar el marco del crucigrama
     frame_menu.pack()  # Volver a mostrar el menú

@@ -1,17 +1,26 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog
-import struct
 import MenuPrincipal
 
 class Crucigrama:
-    def _init_(self, nombre, filas, columnas, master, columna_offset):
+    def __init__(self, nombre, filas, columnas, master, columna_offset):
+        """
+        Inicializa una instancia de Crucigrama.
+
+        Parámetros:
+        - nombre: Nombre del crucigrama (usado para identificarlo).
+        - filas: Número de filas del crucigrama.
+        - columnas: Número de columnas del crucigrama.
+        - master: Ventana o marco padre donde se mostrará el crucigrama.
+        - columna_offset: Posición de inicio en la ventana principal (para colocar el crucigrama).
+        """
         self.nombre = nombre
         self.filas = filas
         self.columnas = columnas
         self.cuadrícula = [["" for _ in range(columnas)] for _ in range(filas)]
         self.descripciones = []  # Lista para almacenar las descripciones de las palabras
         self.palabras_info = []  # Lista para almacenar información de las palabras
-        
+
         self.ventana = tk.Frame(master)  # Usar Frame para manejar la ventana del crucigrama
         self.crear_cuadricula()
 
@@ -39,6 +48,9 @@ class Crucigrama:
         self.ventana.grid(row=0, column=columna_offset)
 
     def crear_cuadricula(self):
+        """
+        Crea la cuadrícula visual del crucigrama con botones en cada celda.
+        """
         for i in range(self.filas):
             for j in range(self.columnas):
                 # Crear un botón en la posición (i, j)
@@ -48,14 +60,26 @@ class Crucigrama:
                 self.cuadrícula[i][j] = boton
 
     def puede_colocarse(self, palabra, fila, columna, direccion):
+        """
+        Verifica si una palabra se puede colocar en la cuadrícula sin sobrepasar los límites
+        o chocar con otras letras que no coincidan.
+
+        Parámetros:
+        - palabra: La palabra que se intenta colocar.
+        - fila: La fila inicial donde se quiere colocar.
+        - columna: La columna inicial donde se quiere colocar.
+        - direccion: La dirección en que se intenta colocar la palabra ("horizontal" o "vertical").
+
+        Retorna:
+        - True si la palabra se puede colocar, False si no.
+        """
         if direccion == "horizontal":
             if columna + len(palabra) > self.columnas:  # Comprobar que no se salga
                 return False
             for k in range(len(palabra)):
-                # Validar que si hay letra existente, debe coincidir
                 if self.cuadrícula[fila][columna + k]['text'] not in ["", palabra[k]]:
                     return False
-            return True  # Se puede colocar horizontalmente
+            return True
             
         elif direccion == "vertical":
             if fila + len(palabra) > self.filas:  # Comprobar que no se salga
@@ -63,31 +87,45 @@ class Crucigrama:
             for k in range(len(palabra)):
                 if self.cuadrícula[fila + k][columna]['text'] not in ["", palabra[k]]:
                     return False
-            return True  # Se puede colocar verticalmente
+            return True
         
         return False
 
     def colocar_palabra(self, palabra, fila, columna, direccion):
+        """
+        Coloca una palabra en la cuadrícula y guarda su información.
+
+        Parámetros:
+        - palabra: La palabra que se va a colocar.
+        - fila: La fila donde comenzará la palabra.
+        - columna: La columna donde comenzará la palabra.
+        - direccion: La dirección en la que se colocará la palabra (horizontal o vertical).
+        """
         if direccion == "horizontal":
             for k in range(len(palabra)):
                 self.cuadrícula[fila][columna + k]['text'] = palabra[k]  # Colocar la letra de la palabra
-            tipo = "Horizontal"
         elif direccion == "vertical":        
             for k in range(len(palabra)):
                 self.cuadrícula[fila + k][columna]['text'] = palabra[k]  # Colocar la letra de la palabra
-            tipo = "Vertical"
 
-        # Guardar la descripción (de momento no se usa para agregar la palabra)
-        self.descripciones.append(f"Descripción de {palabra}")  # Agregar la descripción a la lista
-        self.palabras_info.append((palabra, fila, columna, direccion))  # Agregar información de la palabra
+        # Guardar la descripción y la información de la palabra
+        self.descripciones.append(f"Descripción de {palabra}")
+        self.palabras_info.append((palabra, fila, columna, direccion))
 
     def extraer_texto(self):
+        """
+        Extrae el texto del cuadro de texto de descripciones y lo guarda en la lista de descripciones.
+        """
         texto = self.texto_entry.get("1.0", tk.END).strip()  # Extraer texto del cuadro de texto
         self.descripciones.append(texto)  # Guardar en la lista
         self.texto_entry.delete("1.0", tk.END)  # Limpiar el cuadro de texto
         messagebox.showinfo("Éxito", "Texto extraído y almacenado correctamente.")
 
     def agregar_palabra(self):
+        """
+        Intenta agregar una palabra en la cuadrícula en la primera posición disponible.
+        Primero intenta colocar la palabra horizontalmente, luego verticalmente.
+        """
         palabra = self.entrada_palabra.get()
         self.entrada_palabra.delete(0, tk.END)  # Limpiar la entrada de la palabra
 
@@ -107,27 +145,23 @@ class Crucigrama:
         messagebox.showinfo("Error", "No se pudo acomodar la palabra en la cuadrícula.")
 
     def guardar_crucigrama(self):
-        # Abrir diálogo para guardar archivo
+        """
+        Guarda el crucigrama actual en un archivo de texto con formato personalizado.
+        """
         archivo_guardar = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de Texto", "*.c3d")])
         if not archivo_guardar:
             return  # Si el usuario cancela, no hacer nada
 
         # Guardar en formato de texto
         with open(archivo_guardar, "w", encoding='utf-8') as archivo:
-            # Escribir la versión del formato
             version = 1
             archivo.write(f"Versión: {version}\n")  # Escribir la versión
+            archivo.write(f"Dimensiones: {self.columnas} x {self.filas}\n")  # Dimensiones
 
-            # Escribir dimensiones
-            archivo.write(f"Dimensiones: {self.columnas} x {self.filas}\n")  # Dimensiones X, Y, Z
-
-            # Escribir número de palabras
             num_palabras = len(self.palabras_info)
             archivo.write(f"Número de palabras: {num_palabras}\n")  # Número total de palabras
 
-            # Escribir cada palabra y su información
             for index, (palabra, fila, columna, direccion) in enumerate(self.palabras_info):
-                # Longitud de la palabra
                 longitud_palabra = len(palabra)
                 descripcion = self.descripciones[index] if index < len(self.descripciones) else ""
                 archivo.write(f"Palabra: {palabra} (Longitud: {longitud_palabra})\n")
@@ -139,7 +173,14 @@ class Crucigrama:
     
 
 class App:
-    def _init_(self, master, volver_al_menu):
+    def __init__(self, master, volver_al_menu):
+        """
+        Inicializa la aplicación principal.
+
+        Parámetros:
+        - master: Ventana o marco principal donde se mostrará la aplicación.
+        - volver_al_menu: Función que se ejecutará para volver al menú principal.
+        """
         self.ventana_principal = tk.Frame(master)  # Usar un Frame en lugar de una ventana
         self.ventana_principal.pack()
         self.volver_al_menu = volver_al_menu  # Guardar referencia a la función de volver al menú
@@ -158,10 +199,13 @@ class App:
 
 # Inicializar la aplicación
 def main():
+    """
+    Función principal que inicia la aplicación de crucigramas.
+    """
     root = tk.Tk()
     root.title("Aplicación de Crucigramas")
     app = App(root, MenuPrincipal)  # Aquí pasas la función para volver al menú
     root.mainloop()
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()

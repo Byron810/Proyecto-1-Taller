@@ -65,16 +65,14 @@ def crear_ventana_crucigramas(dimensiones1, palabras1, dimensiones2, palabras2):
     btn_validar2 = tk.Button(ventana, text="Validar Crucigrama 2", command=lambda: validar_crucigrama(celdas2, palabras2))
     btn_validar2.grid(row=1, column=1, pady=10)
 
-  # Botón para ver la resolución
+    # Botón para ver la resolución
     boton_ver_resolucion = tk.Button(ventana, text="Ver Resolución", width=20, command=FL.iniciar_programa)  # Sin paréntesis
     boton_ver_resolucion.grid(row=1, column=2, pady=10)
 
     boton_salir = tk.Button(ventana, text="Salir", width=20, command=MenuPrincipal.menu_principal)
     boton_salir.grid(row=1, column=3, pady=10)
 
-
     ventana.mainloop()
-
 
 def validar_crucigrama(celdas, palabras):
     """Valida si las entradas del crucigrama son correctas."""
