@@ -4,7 +4,7 @@ import struct
 import MenuPrincipal
 
 class Crucigrama:
-    def __init__(self, nombre, filas, columnas, master, columna_offset):
+    def _init_(self, nombre, filas, columnas, master, columna_offset):
         self.nombre = nombre
         self.filas = filas
         self.columnas = columnas
@@ -139,7 +139,7 @@ class Crucigrama:
     
 
 class App:
-    def __init__(self, master, volver_al_menu):
+    def _init_(self, master, volver_al_menu):
         self.ventana_principal = tk.Frame(master)  # Usar un Frame en lugar de una ventana
         self.ventana_principal.pack()
         self.volver_al_menu = volver_al_menu  # Guardar referencia a la función de volver al menú
@@ -163,5 +163,5 @@ def main():
     app = App(root, MenuPrincipal)  # Aquí pasas la función para volver al menú
     root.mainloop()
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
